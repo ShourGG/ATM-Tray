@@ -44,15 +44,19 @@ jobs:
         run: |
           if [ -n "${{ github.event.inputs.version }}" ]; then
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
-          else
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          else
+            # 从 Cargo.toml 读取版本号
+            VERSION=$(grep '^version = ' src-tauri/Cargo.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
           fi
 
       - name: Rename artifact
         shell: pwsh
         run: |
           $version = "${{ steps.version.outputs.version }}"
-          Copy-Item "src-tauri/target/release/atm-tray.exe" "atm-tray-v${version}-windows.exe"
+          Copy-Item "src-tauri/target/release/atm-tray.exe" "atm-tray-v$version-windows.exe"
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
@@ -91,8 +95,11 @@ jobs:
         run: |
           if [ -n "${{ github.event.inputs.version }}" ]; then
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
-          else
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(grep '^version = ' src-tauri/Cargo.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
           fi
 
       - name: List build output
