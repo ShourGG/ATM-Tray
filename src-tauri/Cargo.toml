@@ -1,0 +1,45 @@
+[package]
+name = "atm-tray"
+version = "2.2.4"
+description = "ATM Tray - Lightweight Background Service"
+authors = ["ATM Team"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-opener = "2"
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-single-instance = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "stream"], default-features = false }
+futures-util = "0.3"
+dirs = "6"
+uuid = { version = "1", features = ["v4"] }
+chrono = "0.4"
+opener = "0.7"
+base64 = "0.22"
+sha2 = "0.10"
+hmac = "0.12"
+aes-gcm = "0.10"
+rand = "0.8"
+hex = "0.4"
+machine-uid = "0.5"
+lazy_static = "1.4"
+futures = "0.3"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "z"
+strip = true
+debug = false

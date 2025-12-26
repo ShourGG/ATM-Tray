@@ -1,0 +1,16 @@
+{
+  "name": "atm-client",
+  "version": "1.0.0",
+  "description": "ATM Token Client - Secure Edition",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.9.6"
+  }
+}

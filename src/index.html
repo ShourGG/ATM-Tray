@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATM Tray</title>
+  <link rel="stylesheet" href="tray-styles.css">
+</head>
+<body>
+  <!-- 自定义标题栏 -->
+  <div class="titlebar" data-tauri-drag-region>
+    <div class="titlebar-title" data-tauri-drag-region>ATM Tray</div>
+    <div class="titlebar-controls">
+      <button class="titlebar-btn" id="btn-notice" title="公告">
+        <svg width="12" height="12" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+      </button>
+      <button class="titlebar-btn" id="btn-settings" title="设置">
+        <svg width="12" height="12" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+      </button>
+      <button class="titlebar-btn" id="btn-minimize" title="最小化">
+        <svg width="10" height="10" viewBox="0 0 12 12"><path d="M1 6h10" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <button class="titlebar-btn titlebar-btn-close" id="btn-close" title="关闭">
+        <svg width="10" height="10" viewBox="0 0 12 12"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="app-container">
+    <!-- 登录页面 -->
+    <div class="page" id="page-login">
+      <div class="login-card">
+        <h2>ATM Tray</h2>
+        <p class="subtitle">输入激活码开始使用</p>
+        <div class="login-form">
+          <input type="text" id="activation-code" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off">
+          <button class="btn btn-primary btn-block" id="btn-activate">
+            <span class="btn-text">激活</span>
+            <span class="btn-loading" style="display:none;">...</span>
+          </button>
+        </div>
+        <div class="error-message" id="login-error" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- 模式选择页面 -->
+    <div class="page" id="page-mode-select" style="display:none;">
+      <div class="mode-select-card">
+        <h2>选择模式</h2>
+        <p class="subtitle">检测到您拥有两种激活码</p>
+        
+        <div class="mode-options">
+          <div class="mode-option" id="btn-mode-normal">
+            <div class="mode-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div class="mode-info">
+              <div class="mode-title">正常模式</div>
+              <div class="mode-desc">手动切换账号</div>
+              <div class="mode-code" id="normal-license-code"></div>
+            </div>
+          </div>
+          
+          <div class="mode-option autoswitch" id="btn-mode-autoswitch">
+            <div class="mode-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 1l4 4-4 4"/>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                <path d="M7 23l-4-4 4-4"/>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              </svg>
+            </div>
+            <div class="mode-info">
+              <div class="mode-title">自动切换模式</div>
+              <div class="mode-desc">余额用完自动切换下一个</div>
+              <div class="mode-code" id="autoswitch-license-code"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 主页面 (极简聚焦布局) -->
+    <div class="page" id="page-main" style="display:none;">
+      <!-- 聚焦卡片 -->
+      <div class="focus-card">
+        <!-- 顶部状态栏 -->
+        <div class="focus-header">
+          <div class="status-badge">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-label">运行中</span>
+            <span class="version-badge" id="version-badge">v1.4.0</span>
+            <span class="mode-indicator" id="mode-indicator" style="display:none;"></span>
+          </div>
+          <div class="focus-actions">
+            <button class="btn-icon" id="btn-logout" title="退出">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 核心数据展示 -->
+        <div class="focus-content">
+          <div class="account-email" id="account-email">未选中账号</div>
+          <div class="quota-display">
+            <span class="quota-value" id="quota-value">--</span>
+            <span class="quota-label">剩余配额</span>
+          </div>
+          <div class="quota-progress-bg">
+            <div class="quota-progress-bar" id="quota-progress"></div>
+          </div>
+          <div class="quota-total" id="quota-total">点击管理账户激活</div>
+          
+          <!-- 指向性提示箭头 (长链级联) -->
+          <div class="activation-hint-arrow" id="activation-arrow" style="display:none;">
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <svg class="arrow-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+
+          </div>
+        </div>
+        <!-- 底部触发器 -->
+        <button class="drawer-trigger" id="btn-open-drawer">
+          <span class="trigger-bar"></span>
+          <span class="trigger-text">管理账号</span>
+        </button>
+      </div>
+
+      <!-- 底部抽屉 -->
+      <div class="drawer-backdrop" id="drawer-backdrop"></div>
+      <div class="drawer" id="main-drawer">
+        <div class="drawer-handle-bar">
+          <div class="drawer-handle"></div>
+        </div>
+        
+        <div class="drawer-content">
+          <div class="drawer-section">
+            <div class="section-header">
+              <span class="section-title">可用账号</span>
+              <button class="btn-icon-sm" id="btn-refresh" title="刷新">
+                <svg width="14" height="14" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+              </button>
+            </div>
+            <div class="token-list" id="token-list">
+              <div class="token-items" id="token-items"></div>
+            </div>
+          </div>
+
+          <div class="drawer-divider"></div>
+
+          <div class="drawer-section">
+            <div class="section-header">
+              <span class="section-title">激活码管理</span>
+              <button class="btn-add" id="btn-add-code" title="添加激活码">+</button>
+            </div>
+            <div class="code-list" id="code-list"></div>
+          </div>
+          
+          <div class="drawer-footer">
+            <span class="status-text" id="status-text">就绪</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 添加激活码弹窗 -->
+    <div class="modal" id="modal-add-code" style="display:none;">
+      <div class="modal-backdrop" id="add-code-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>添加激活码</h3>
+          <button class="btn-modal-close" id="btn-close-add-code">&times;</button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="new-activation-code" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off">
+          <button class="btn btn-primary btn-block" id="btn-confirm-add-code" style="margin-top:12px;">
+            <span class="btn-text">添加</span>
+            <span class="btn-loading" style="display:none;">...</span>
+          </button>
+          <div class="error-message" id="add-code-error" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 公告弹窗 -->
+    <div class="modal" id="modal-notice" style="display:none;">
+      <div class="modal-backdrop" id="notice-backdrop"></div>
+      <div class="modal-content modal-notice-content">
+        <div class="modal-header">
+          <h3>公告</h3>
+          <button class="btn-modal-close" id="btn-close-notice">&times;</button>
+        </div>
+        <div class="modal-body notice-body">
+          <div class="notice-section" style="background:rgba(59,130,246,0.1);border-radius:8px;padding:12px;margin-bottom:12px;">
+            <h4 style="color:#3b82f6;margin-bottom:8px;">📖 使用说明</h4>
+            <ul style="margin:0;padding-left:20px;font-size:12px;">
+              <li><strong>激活登录</strong> - 输入激活码后点击激活</li>
+              <li><strong>管理账号</strong> - 点击底部"管理账号"打开抽屉</li>
+              <li><strong>切换账号</strong> - 在账号列表点击"激活"按钮</li>
+              <li><strong>托盘运行</strong> - 关闭窗口后在托盘继续运行</li>
+              <li><strong>退出程序</strong> - 右键托盘图标选择退出</li>
+            </ul>
+          </div>
+          <div class="notice-section">
+            <h4 style="font-size:13px;margin-bottom:8px;">📦 v2.1.0 更新日志</h4>
+            <ul style="margin:0;padding-left:20px;font-size:12px;color:var(--text-muted);">
+              <li>【新功能】双激活码模式（同时支持普通和自动切换激活码）</li>
+              <li>【新功能】启动时模式选择界面</li>
+              <li>【优化】自动切换优先使用余额最少的Token</li>
+              <li>【优化】状态栏显示当前模式标识</li>
+            </ul>
+          </div>
+          </div>
+        <div class="modal-footer-fixed">
+          <label class="checkbox-label">
+            <input type="checkbox" id="notice-dont-show">
+            <span>不再显示此公告</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设置弹窗 -->
+    <div class="modal" id="modal-settings" style="display:none;">
+      <div class="modal-backdrop" id="settings-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>设置</h3>
+          <button class="btn-modal-close" id="btn-close-settings">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-item">
+            <span class="setting-label">点击关闭按钮时</span>
+            <select id="close-behavior">
+              <option value="hide">最小化到托盘</option>
+              <option value="exit">退出程序</option>
+            </select>
+          </div>
+          <div class="setting-item" style="margin-top:12px;">
+            <span class="setting-label">开机自启动</span>
+            <label class="switch">
+              <input type="checkbox" id="autostart-toggle">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="setting-item" style="margin-top:16px;">
+            <button class="btn btn-primary btn-block" id="btn-check-update">检查更新</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="modal" id="modal-delete" style="display:none;">
+      <div class="modal-backdrop" id="delete-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>删除确认</h3>
+          <button class="btn-modal-close" id="btn-close-delete">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;text-align:center;">确定要删除此激活码吗？</p>
+          <div class="exit-options">
+            <button class="btn btn-block" id="btn-delete-cancel" style="margin-bottom:10px;">取消</button>
+            <button class="btn btn-block btn-danger" id="btn-delete-confirm">确认删除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 退出确认弹窗 -->
+    <div class="modal" id="modal-exit" style="display:none;">
+      <div class="modal-backdrop" id="exit-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>退出确认</h3>
+          <button class="btn-modal-close" id="btn-close-exit">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;text-align:center;">请选择退出方式</p>
+          <div class="exit-options">
+            <button class="btn btn-block" id="btn-exit-normal" style="margin-bottom:10px;">正常退出</button>
+            <button class="btn btn-block btn-danger" id="btn-exit-clear" style="margin-bottom:10px;">清理数据退出</button>
+            <button class="btn btn-block btn-warning" id="btn-exit-unbind">解绑设备并退出</button>
+          </div>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:12px;text-align:center;">解绑设备将清除数据并允许在其他设备使用激活码</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 首次关闭引导弹窗 -->
+  <div class="modal" id="modal-close-guide" style="display:none;">
+    <div class="modal-backdrop" id="close-guide-backdrop"></div>
+    <div class="modal-content" style="width:300px;">
+      <div class="modal-header">
+        <h3>关闭行为设置</h3>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;text-align:center;">首次使用，请选择点击关闭按钮时的行为：</p>
+        <button class="btn btn-primary btn-block" id="btn-guide-tray" style="margin-bottom:10px;">
+          <span style="font-size:14px;">📌 最小化到托盘</span>
+          <span style="display:block;font-size:11px;opacity:0.8;margin-top:4px;">推荐！后台仅占用 4MB 内存</span>
+        </button>
+        <button class="btn btn-block" id="btn-guide-exit" style="margin-bottom:12px;">
+          <span style="font-size:14px;">关闭软件</span>
+        </button>
+        <div style="background:rgba(239,68,68,0.1);border-radius:6px;padding:10px;border-left:3px solid #ef4444;">
+          <p style="font-size:12px;color:#ef4444;margin:0;"><strong>⚠️ 注意：</strong>关闭软件会导致 Token 无法激活使用！建议选择托盘模式。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 提示 -->
+  <div class="toast" id="toast">
+    <div class="toast-icon" id="toast-icon"></div>
+    <span class="toast-message" id="toast-message"></span>
+  </div>
+
+  <!-- 全屏加载遮罩 -->
+  <div class="loading-overlay" id="loading-overlay" style="display:none;">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="loading-text">正在登录中...</div>
+    </div>
+  </div>
+
+  <!-- 更新弹窗 -->
+  <div class="modal" id="modal-update" style="display:none;">
+    <div class="modal-backdrop" id="update-backdrop"></div>
+    <div class="modal-content" style="width:320px;">
+      <div class="modal-header">
+        <h3>发现新版本</h3>
+        <button class="btn-modal-close" id="btn-close-update">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:32px;margin-bottom:8px;">🎉</div>
+          <div style="font-size:18px;font-weight:600;" id="update-version">v1.0.1</div>
+          <div style="font-size:12px;color:var(--text-muted);" id="update-size">10.5 MB</div>
+        </div>
+        <div style="background:var(--bg-card);border-radius:8px;padding:12px;margin-bottom:16px;max-height:100px;overflow-y:auto;">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">更新内容：</div>
+          <div style="font-size:13px;" id="update-changelog">-</div>
+        </div>
+        <button class="btn btn-primary btn-block" id="btn-do-update">立即更新</button>
+        <button class="btn btn-block" id="btn-skip-update" style="margin-top:8px;">稍后再说</button>
+        <div id="update-progress" style="display:none;margin-top:12px;">
+          <div style="background:var(--bg-card);border-radius:4px;overflow:hidden;height:6px;">
+            <div id="update-progress-bar" style="width:0%;height:100%;background:var(--primary);transition:width 0.3s;"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-align:center;" id="update-progress-text">准备下载...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="tray-renderer.js"></script>
+</body>
+</html>

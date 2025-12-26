@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+src-tauri/target/
+dist/
+updater/target/
+
+# Executable files
+*.exe
+*.dmg
+*.app
+
+# Environment
+.env
+*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Database
+server/data/*.db
+
+# Debug symbols
+*.pdb
